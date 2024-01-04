@@ -1,4 +1,4 @@
-const { ses, pinpoint } = require('../utils/awsConfig');
+const { ses } = require('../utils/awsConfig');
 
 
 async function getEmailStatus(req, res)
@@ -37,39 +37,26 @@ async function getEmailStatus(req, res)
     }
 }
 
-
-
-
-
 async function getEmailTrackingStatus(req, res)
 {
-    const { email } = req.params;
-
-    // Get Pinpoint email tracking status
-    const pinpointParams = {
-        ApplicationId: '8010b8153d3346ba92684851e4f08e52',
-        EndTime: new Date(),
-        StartTime: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
-        EventsRequest: {
-            ApplicationId: '8010b8153d3346ba92684851e4f08e52',
-            Dimensions: {
-                Attributes: {
-                    'email.address': [email],
-                },
-            },
-            EventType: ['email_opened', 'email_link_clicked'],
-            PageSize: 100,
-        },
-    };
-
     try
     {
-        const trackingData = await pinpoint.getJourneyExecutionMetrics(pinpointParams).promise();
-        res.json({ success: true, trackingData });
+        var chunks = [];
+        req.on('data', function (chunk)
+        {
+            chunks.push(chunk);
+        });
+        req.on('end', function ()
+        {
+            var message = JSON.parse(chunks.join(''));
+            console.log(message)
+        });
+
+        res.end();
     } catch (error)
     {
-        console.error('Error getting email tracking status:', error.message);
-        res.status(500).json({ success: false, error: error.message });
+        console.error('Error handling SES event:', error.message);
+        res.status(500).json({ "error": "Error handling SES event" });
     }
 }
 

@@ -1,11 +1,19 @@
 const { ses } = require('../utils/awsConfig');
+const ejs = require('ejs');
+const fs = require('fs/promises');
 
 async function sendEmail(req, res)
 {
     const { to, subject, message } = req.body;
 
     // Specify the SES configuration set name
-    const configurationSetName = 'my-first-configuration-set'; // Replace with your actual configuration set name
+    const configurationSetName = process.env.CONFIGURATION; // Replace with your actual configuration set name
+    // Read the EJS template file
+    const template = await fs.readFile('./views/emailTemplate.ejs', 'utf-8');
+    // Compile the template
+    const compiledTemplate = ejs.compile(template);
+    // Render the template with dynamic values
+    const renderedTemplate = compiledTemplate({ name: to.split('@')[0], message });
 
     const sesParams = {
         Destination: {
@@ -13,15 +21,15 @@ async function sendEmail(req, res)
         },
         Message: {
             Body: {
-                Text: {
-                    Data: "hi this is message",
+                Html: {
+                    Data: renderedTemplate,
                 },
             },
             Subject: {
                 Data: subject,
             },
         },
-        Source: 'mohitkushwaha4508@gmail.com',
+        Source: process.env.SOURCEEMAIL,
         ConfigurationSetName: configurationSetName, // Specify the SES configuration set
     };
 

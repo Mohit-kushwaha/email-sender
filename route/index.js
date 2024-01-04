@@ -8,6 +8,6 @@ router.post('/send-email', sendEmail);
 
 // Get email status and tracking status routes
 router.get('/email-status/:email', getEmailStatus);
-router.get('/email-tracking-status/:email', getEmailTrackingStatus);
+router.get('/ses-event-notification', getEmailTrackingStatus);
 
 module.exports = router;
