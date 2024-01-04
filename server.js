@@ -85,12 +85,13 @@
 
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-
+app.use(bodyParser.json());
 // Routes
 const indexRouter = require('./route/index');
 
@@ -102,6 +103,7 @@ app.post('/ses-event-notification', async (req, res) =>
     {
         console.log('Received POST request - Headers:', req.headers);
         console.log('Received POST request - Body:', req.body);
+        console.log('Received POST request - raw:', req.rawBody);
 
         // Handle SubscriptionConfirmation
         if (req.headers['x-amz-sns-message-type'] === 'SubscriptionConfirmation')
