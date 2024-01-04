@@ -14,7 +14,7 @@ async function sendEmail(req, res)
         Message: {
             Body: {
                 Text: {
-                    Data: message,
+                    Data: "hi this is message",
                 },
             },
             Subject: {

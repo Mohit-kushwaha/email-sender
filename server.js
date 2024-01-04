@@ -109,16 +109,7 @@ app.post('/ses-event-notification', async (req, res) =>
         {
             var message = JSON.parse(chunks.join(''));
             console.log(message)
-            if (message.Type === 'SubscriptionConfirmation')
-            {
-                console.log(message.SubscribeURL)
-                res.json(message.Type)
-            }
-            else
-            {
-                const event = JSON.parse(message.Message)
-                res.json(event)
-            }
+
         });
 
         res.end();
