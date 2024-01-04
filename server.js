@@ -108,19 +108,18 @@ app.post('/ses-event-notification', async (req, res) =>
         req.on('end', function ()
         {
             var message = JSON.parse(chunks.join(''));
-            console.log(message);
-
+            if (message.SubscriptionConfirmation.Type === 'SubscriptionConfirmation')
+            {
+                console.log(message.SubscriptionConfirmation.SubscribeURL)
+                res.json(message.SubscriptionConfirmation.Type)
+            }
+            else
+            {
+                const event = JSON.parse(message.SubscriptionConfirmation.message)
+                res.json(event)
+            }
         });
-        if (SubscriptionConfirmation.Type === 'SubscriptionConfirmation')
-        {
-            console.log(SubscriptionConfirmation.SubscribeURL)
-            res.json(SubscriptionConfirmation.Type)
-        }
-        else
-        {
-            const event = JSON.parse(SubscriptionConfirmation.message)
-            res.json(event)
-        }
+
         res.end();
     } catch (error)
     {
