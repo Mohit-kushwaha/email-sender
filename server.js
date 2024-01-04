@@ -85,13 +85,12 @@
 
 
 const express = require('express');
-const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json());
-app.use(bodyParser.json());
+
 // Routes
 const indexRouter = require('./route/index');
 
@@ -101,33 +100,28 @@ app.post('/ses-event-notification', async (req, res) =>
 {
     try
     {
-        console.log('Received POST request - Headers:', req.headers);
-        console.log('Received POST request - Body:', req.body);
-        console.log('Received POST request - raw:', req.rawBody);
-
-        // Handle SubscriptionConfirmation
-        if (req.headers['x-amz-sns-message-type'] === 'SubscriptionConfirmation')
+        var chunks = [];
+        req.on('data', function (chunk)
         {
-            const subscribeURL = req.body.SubscribeURL;
+            chunks.push(chunk);
+        });
+        req.on('end', function ()
+        {
+            var message = JSON.parse(chunks.join(''));
+            console.log(message);
 
-            // Automatically confirm the subscription by making a GET request to the SubscribeURL
-            await fetch(subscribeURL);
-
-            console.log('Subscription confirmed:', subscribeURL);
-            res.json({ "message": "Subscription confirmed" });
-            return;
+        });
+        if (SubscriptionConfirmation.Type === 'SubscriptionConfirmation')
+        {
+            console.log(SubscriptionConfirmation.SubscribeURL)
+            res.json(SubscriptionConfirmation.Type)
         }
-
-        // Handle other SES events
-        if (req.body && typeof req.body === 'object')
+        else
         {
-            const sesEvent = req.body;
-            console.log('SES Event:', sesEvent);
-            res.json({ "message": req.body });
-        } else
-        {
-            throw new Error('Invalid SES event payload');
+            const event = JSON.parse(SubscriptionConfirmation.message)
+            res.json(event)
         }
+        res.end();
     } catch (error)
     {
         console.error('Error handling SES event:', error.message);
