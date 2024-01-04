@@ -8,6 +8,7 @@ async function sendEmail(req, res)
 
     // Specify the SES configuration set name
     const configurationSetName = process.env.CONFIGURATION; // Replace with your actual configuration set name
+
     // Read the EJS template file
     const template = await fs.readFile('./views/emailTemplate.ejs', 'utf-8');
     // Compile the template
