@@ -96,21 +96,31 @@ const indexRouter = require('./route/index');
 
 app.use('/', indexRouter);
 
-app.post('/ses-event-notification', (req, res) =>
+app.post('/ses-event-notification', async (req, res) =>
 {
     try
     {
         console.log('Received POST request - Headers:', req.headers);
         console.log('Received POST request - Body:', req.body);
 
-        // Ensure req.body is defined and not empty
+        // Handle SubscriptionConfirmation
+        if (req.headers['x-amz-sns-message-type'] === 'SubscriptionConfirmation')
+        {
+            const subscribeURL = req.body.SubscribeURL;
+
+            // Automatically confirm the subscription by making a GET request to the SubscribeURL
+            await fetch(subscribeURL);
+
+            console.log('Subscription confirmed:', subscribeURL);
+            res.json({ "message": "Subscription confirmed" });
+            return;
+        }
+
+        // Handle other SES events
         if (req.body && typeof req.body === 'object')
         {
-            // Use req.body directly to parse SES event payload
             const sesEvent = req.body;
-
             console.log('SES Event:', sesEvent);
-
             res.json({ "message": req.body });
         } else
         {
