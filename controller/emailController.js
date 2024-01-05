@@ -78,7 +78,7 @@ async function sendEmail(req, res)
             const { Recipient, Subject, Message } = data;
 
             // Render the template with dynamic values
-            const renderedTemplate = compiledTemplate({ name: Recipient.split('@')[0], message: Message });
+            const renderedTemplate = compiledTemplate({ name: Recipient.split('@')[0], message: Message, greeting: getGreeting() });
 
             const sesParams = {
                 Destination: {
@@ -133,3 +133,20 @@ async function getAllEmail(req, res)
 }
 
 module.exports = { sendEmail, getAllEmail };
+
+
+function getGreeting()
+{
+    const currentTime = new Date().getHours();
+
+    if (currentTime >= 5 && currentTime < 12)
+    {
+        return "Good morning";
+    } else if (currentTime >= 12 && currentTime < 18)
+    {
+        return "Good afternoon";
+    } else
+    {
+        return "Good evening";
+    }
+}

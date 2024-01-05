@@ -42,7 +42,7 @@
 <body>
     <div class="container">
         <h1>
-            <%= getGreeting() %>, <%= name %>,
+            <%= greeting %>, <%= name %>,
         </h1>
         <p>
             Welcome to our platform! <br>
@@ -51,23 +51,6 @@
         </p>
     </div>
 
-    <script>
-        function getGreeting()
-        {
-            const currentTime = new Date().getHours();
-
-            if (currentTime >= 5 && currentTime < 12)
-            {
-                return "Good morning";
-            } else if (currentTime >= 12 && currentTime < 18)
-            {
-                return "Good afternoon";
-            } else
-            {
-                return "Good evening";
-            }
-        }
-    </script>
 </body>
 
 </html>
